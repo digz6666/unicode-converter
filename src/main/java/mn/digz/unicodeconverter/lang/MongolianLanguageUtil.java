@@ -14,11 +14,11 @@ public class MongolianLanguageUtil {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return output;
     }
-    
+
     private static char toUnicode(char input) {
         if(input == 168) {
             return 1025;
@@ -46,7 +46,7 @@ public class MongolianLanguageUtil {
             return input;
         }
     }
-    
+
     public static void main(String[] args) {
         System.out.println(toUnicode("ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎªÏÐÑÒÓ¯ÔÕÖ×ØÙÚÛÜÝÞßàáâãäå¸æçèéêëìíîºïðñòó¿ôõö÷øùúûüýþÿ"));
     }

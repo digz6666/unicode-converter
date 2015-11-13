@@ -1,10 +1,13 @@
 package mn.digz.unicodeconverter;
 
 import java.io.File;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import mn.digz.unicodeconverter.excel.ExcelConverter;
+import mn.digz.unicodeconverter.powerpoint.PowerPointConverter;
 
 /**
  *
@@ -143,11 +146,12 @@ public class MainFrame extends javax.swing.JFrame {
     private void btn_inputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_inputActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         //fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Excel file", "xls", "xlsx"));
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Excel file", "xls", "xlsx"));
-        
+        //fileChooser.setFileFilter(new FileNameExtensionFilter("Excel file", "xls", "xlsx"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Excel file", "xls", "xlsx"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Powerpoint file", "ppt", "pptx"));
+
         int result = fileChooser.showOpenDialog(this);
-        if(result == JFileChooser.APPROVE_OPTION)
-        {
+        if(result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             if(!selectedFile.canRead()){
                 // cannot read file
@@ -162,8 +166,7 @@ public class MainFrame extends javax.swing.JFrame {
         JFileChooser fileChooser = new JFileChooser();
         
         int result = fileChooser.showSaveDialog(this);
-        if(result == JFileChooser.APPROVE_OPTION)
-        {
+        if(result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             tf_output.setText(selectedFile.getAbsolutePath());
         }
@@ -172,9 +175,19 @@ public class MainFrame extends javax.swing.JFrame {
     private void btn_convertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_convertActionPerformed
         if(!tf_input.getText().equals("") && !tf_output.getText().equals("")) {
             try {
-                ExcelConverter.convert(tf_input.getText(), tf_output.getText());
+                String contentType = Files.probeContentType(FileSystems.getDefault().getPath(tf_input.getText()));
+                switch(contentType) {
+                    case "application/vnd.ms-excel": // excel 2003
+                    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": // excel 2007+
+                        ExcelConverter.convert(tf_input.getText(), tf_output.getText());
+                        break;
+                    case "application/vnd.ms-powerpoint": // powerpoint 2003
+                    case "application/vnd.openxmlformats-officedocument.presentationml.presentation": // powerpoint 2007+
+                        PowerPointConverter.convert(tf_input.getText(), tf_output.getText());
+                        break;
+                }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                //ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
@@ -202,19 +215,16 @@ public class MainFrame extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new MainFrame().setVisible(true);
             }

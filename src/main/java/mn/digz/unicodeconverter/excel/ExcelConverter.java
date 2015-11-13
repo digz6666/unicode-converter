@@ -23,15 +23,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author MethoD
  */
 public class ExcelConverter {
-    
+
     public static void convert(String input, String output) throws Exception {
         if(input != null && output != null) {
             Path inputPath = FileSystems.getDefault().getPath(input);
             Path outputPath = FileSystems.getDefault().getPath(output);
             String contentType = Files.probeContentType(inputPath);
-            
+
             Workbook workbook = null;
-            
+
             if(contentType.equals("application/vnd.ms-excel")) { // excel 2003
                 //NPOIFSFileSystem poifs = new NPOIFSFileSystem(new FileInputStream(inputPath.toFile()));
                 //EncryptionInfo decryptionInfo = new EncryptionInfo(poifs);
@@ -47,7 +47,7 @@ public class ExcelConverter {
                 //workbook = new XSSFWorkbook(decryptor.getDataStream(poifs));
                 workbook = new XSSFWorkbook(new FileInputStream(inputPath.toFile()));
             }
-            
+
             if(workbook != null) {
                 SXSSFWorkbook outputWorkbook = new SXSSFWorkbook();
                 for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
